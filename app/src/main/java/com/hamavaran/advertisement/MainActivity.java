@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onBottomBannerClick() {
 
                     }
-                }).loadFullPageBanner();
+                }).loadBottomBanner(Advertisement.BANNER_SIZES.SIZE_FOUR);
 
     }
 }

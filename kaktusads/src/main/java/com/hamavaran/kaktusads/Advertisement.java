@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,15 +22,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.hamavaran.kaktusads.interfaces.BannerClickListener;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
 import com.hamavaran.kaktusads.rest.Model.BaseResponse;
 import com.hamavaran.kaktusads.rest.Model.GetBottomBannerResponse;
 import com.hamavaran.kaktusads.rest.RestClient;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -41,7 +43,7 @@ import static com.hamavaran.kaktusads.KaktusAdsActivity.ADS_TOKEN;
 import static com.hamavaran.kaktusads.KaktusAdsActivity.ADS_URL;
 
 
-public class Advertisement extends AppCompatActivity implements FullPageAdsListener{
+public class Advertisement extends AppCompatActivity implements FullPageAdsListener {
 
     private View view;
     private boolean closeButtonEnabled = false;
@@ -119,11 +121,11 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
     }
 
     private boolean checkBannerCallValidation() {
-        if(packageName == null){
+        if (packageName == null) {
             Toast.makeText(context, "Please set package name", Toast.LENGTH_SHORT).show();
             return true;
         }
-        if(serviceToken == null){
+        if (serviceToken == null) {
             Toast.makeText(context, "Please set your token", Toast.LENGTH_SHORT).show();
             return true;
         }
@@ -229,8 +231,6 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
     }
 
     private RelativeLayout initMainView() {
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context).build();
-        ImageLoader.getInstance().init(config);
         view = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
         rootRL = new RelativeLayout(context);
         rootRL.setLayoutParams(new RelativeLayout.LayoutParams(
@@ -266,23 +266,22 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
         final String imageUrl = response.body().getResult().getImage();
         link = response.body().getResult().getLink();
 
-        ImageLoader.getInstance().displayImage(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl, myImage, null, new ImageLoadingListener() {
+        Glide.with(view).load(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl).addListener(new RequestListener<Drawable>() {
             @Override
-            public void onLoadingStarted(String imageUri, View view) {
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                return false;
             }
+
             @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-            }
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if(!isFullPage) {
+                        if (!isFullPage) {
                             setImageContainerLayoutParams(myImage);
                             sendFeedbackOnBannerLoaded(response.body().getResult().getToken());
                             rootRL.setVisibility(View.VISIBLE);
-                        }else{
+                        } else {
                             SharedMethode.getInstance().setContext(Advertisement.this);
 
                             Intent adsIntent = new Intent(context, KaktusAdsActivity.class);
@@ -293,11 +292,10 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
                         }
                     }
                 }, 1000);
+                return false;
             }
-            @Override
-            public void onLoadingCancelled(String imageUri, View view) {
-            }
-        });
+        }).into(myImage);
+
     }
 
     private void sendFeedbackOnBannerLoaded(String token) {

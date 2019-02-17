@@ -3,14 +3,19 @@ package com.hamavaran.kaktusads;
 import pl.droidsonroids.gif.GifImageView;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 public class KaktusAdsActivity extends AppCompatActivity {
 
@@ -50,22 +55,19 @@ public class KaktusAdsActivity extends AppCompatActivity {
 
         GifImageView myImage = findViewById(R.id.ivAdsContainer);
 
+        Glide.with(KaktusAdsActivity.this).load(loadedAdsUrl.startsWith("http") ? loadedAdsUrl : "http:" + loadedAdsUrl).addListener(new RequestListener<Drawable>() {
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                return false;
+            }
 
-        ImageLoader.getInstance().displayImage(loadedAdsUrl.startsWith("http") ? loadedAdsUrl : "http:" + loadedAdsUrl, myImage, null, new ImageLoadingListener() {
             @Override
-            public void onLoadingStarted(String imageUri, View view) {
-            }
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-            }
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                 fullPageAdsListener.onImageLoaded(ADS_TOKEN);
+                return false;
             }
-            @Override
-            public void onLoadingCancelled(String imageUri, View view) {
-            }
-        });
+        }).into(myImage);
+
 
         myImage.setOnClickListener(new View.OnClickListener() {
             @Override
