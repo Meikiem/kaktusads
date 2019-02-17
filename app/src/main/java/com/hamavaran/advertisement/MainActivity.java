@@ -17,19 +17,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-/*        Advertisement.into(MainActivity.this)
-                .setCloseButtonEnabled(true)
-                .setServiceToken("4yvdhua639")
-                .listener(new BannerClickListener() {
-            @Override
-            public void onBottomBannerCloseClick() {
-                Toast.makeText(MainActivity.this, "kjsdbkjd", Toast.LENGTH_SHORT).show();
-
-            }
-        }).loadBottomBanner(Advertisement.BANNER_SIZES.SIZE_ONE);*/
-
         Advertisement.into(MainActivity.this)
                 .setCloseButtonEnabled(true)
+                .setPackageName(getApplicationContext().getPackageName())
                 .setServiceToken("4yvdhua639")
                 .listener(new BannerClickListener() {
                     @Override

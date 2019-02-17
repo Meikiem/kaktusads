@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.hamavaran.kaktusads.interfaces.BannerClickListener;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
@@ -45,7 +46,7 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
     private View view;
     private boolean closeButtonEnabled = false;
     private RelativeLayout bottomBannerRL;
-    private String serviceToken;
+    private String serviceToken = null;
     private Context context;
     private BannerClickListener listener;
     @SuppressLint("StaticFieldLeak")
@@ -54,6 +55,7 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
     private int timeInterval = -1;
     private String FULL_SIZE;
     private RelativeLayout rootRL;
+    private String packageName = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,6 +71,12 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
 
     public Advertisement setTimeInterval(int interval) {
         timeInterval = interval;
+        return this;
+    }
+
+
+    public Advertisement setPackageName(String packageName) {
+        this.packageName = packageName;
         return this;
     }
 
@@ -106,13 +114,27 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
     }
 
     private void loadBanner(BANNER_SIZES size) {
+        if (checkBannerCallValidation()) return;
         GifImageView myImage = initBottomAdUI();
         getBanner(size.SIZE, myImage, false);
     }
 
     public void loadFullPageBanner() {
+        if (checkBannerCallValidation()) return;
         GifImageView myImage = initFullPageAdUI();
         getBanner(FULL_SIZE, myImage, true);
+    }
+
+    private boolean checkBannerCallValidation() {
+        if(packageName == null){
+            Toast.makeText(context, "Please set package name", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if(serviceToken == null){
+            Toast.makeText(context, "Please set your token", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
     }
 
 
@@ -229,7 +251,7 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
     }
 
     private void getBanner(String size, final GifImageView myImage, final boolean isFullPage) {
-        RestClient.getInstance(RestClient.API_URL).getBottomBanner(serviceToken, size, getDeviceId(), Base64.encodeToString(getApplicationContext().getPackageName().getBytes(), Base64.NO_WRAP)).enqueue(new Callback<GetBottomBannerResponse>() {
+        RestClient.getInstance(RestClient.API_URL).getBottomBanner(serviceToken, size, getDeviceId(), Base64.encodeToString(packageName.getBytes(), Base64.NO_WRAP)).enqueue(new Callback<GetBottomBannerResponse>() {
             @Override
             public void onResponse(Call<GetBottomBannerResponse> call, final Response<GetBottomBannerResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getResult() != null) {
@@ -315,7 +337,7 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
 
     @SuppressLint("HardwareIds")
     private String getDeviceId() {
-        return String.valueOf(Settings.Secure.getString(getApplicationContext().getContentResolver(),
+        return String.valueOf(Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID));
     }
 
