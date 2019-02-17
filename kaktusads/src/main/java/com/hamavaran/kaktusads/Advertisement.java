@@ -4,8 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Base64;
@@ -17,17 +18,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.hamavaran.kaktusads.interfaces.BannerClickListener;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
 import com.hamavaran.kaktusads.rest.Model.BaseResponse;
 import com.hamavaran.kaktusads.rest.Model.GetBottomBannerResponse;
 import com.hamavaran.kaktusads.rest.RestClient;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 
 import androidx.annotation.Nullable;
@@ -57,6 +56,12 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
     private String FULL_SIZE;
     private RelativeLayout rootRL;
 
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
+        ImageLoader.getInstance().init(config);
+    }
 
     public Advertisement setCloseButtonEnabled(boolean isEnabled) {
         closeButtonEnabled = isEnabled;
@@ -244,14 +249,16 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
         assert response.body() != null;
         final String imageUrl = response.body().getResult().getImage();
         link = response.body().getResult().getLink();
-        Glide.with(view).load(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl).listener(new RequestListener<Drawable>() {
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                return false;
-            }
 
+        ImageLoader.getInstance().displayImage(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl, myImage, null, new ImageLoadingListener() {
             @Override
-            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+            public void onLoadingStarted(String imageUri, View view) {
+            }
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            }
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -270,9 +277,11 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
                         }
                     }
                 }, 1000);
-                return false;
             }
-        }).into(myImage);
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+            }
+        });
     }
 
     private void sendFeedbackOnBannerLoaded(String token) {

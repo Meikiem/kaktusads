@@ -8,6 +8,7 @@ project.ext {
     glideVersion = '4.8.0'
     httpInterceptorVersion = '3.11.0'
     okHttpVersion = '3.12.0'
+    universalImageLoader = '1.9.5'
 }
 android {
     compileSdkVersion 28
@@ -45,8 +46,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$project.retrofitVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$project.httpInterceptorVersion"
     implementation "com.squareup.okhttp3:okhttp:$project.okHttpVersion"
-    implementation "com.github.bumptech.glide:glide:$glideVersion"
-    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
+    implementation "com.nostra13.universalimageloader:universal-image-loader:$universalImageLoader"
     implementation "com.android.support:support-annotations:$supportVersion"
     dependencies {
         implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.16'
