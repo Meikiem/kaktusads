@@ -34,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onBottomBannerCloseClick() {
                         Toast.makeText(MainActivity.this, "kjsdbkjd", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onBottomBannerClick() {
 
                     }
                 }).loadFullPageBanner();

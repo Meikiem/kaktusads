@@ -11,7 +11,6 @@ import android.provider.Settings;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,19 +24,25 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.hamavaran.kaktusads.interfaces.BannerClickListener;
+import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
 import com.hamavaran.kaktusads.rest.Model.BaseResponse;
 import com.hamavaran.kaktusads.rest.Model.GetBottomBannerResponse;
 import com.hamavaran.kaktusads.rest.RestClient;
 
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.hamavaran.kaktusads.KaktusAdsActivity.ADS_LINK;
+import static com.hamavaran.kaktusads.KaktusAdsActivity.ADS_TOKEN;
+import static com.hamavaran.kaktusads.KaktusAdsActivity.ADS_URL;
 
-public class Advertisement {
+
+public class Advertisement extends AppCompatActivity implements FullPageAdsListener{
 
     private View view;
     private boolean closeButtonEnabled = false;
@@ -197,6 +202,8 @@ public class Advertisement {
                     link = "http://" + link;
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
                 context.startActivity(browserIntent);
+                listener.onBottomBannerClick();
+                ((ViewGroup) view).removeView(rootRL);
             }
         });
         return myImage;
@@ -218,7 +225,7 @@ public class Advertisement {
     }
 
     private void getBanner(String size, final GifImageView myImage, final boolean isFullPage) {
-        RestClient.getInstance(RestClient.API_FULL_PAGE_URL).getBottomBanner(serviceToken, size, getDeviceId(), Base64.encodeToString(MyApplication.getContext().getPackageName().getBytes(), Base64.NO_WRAP)).enqueue(new Callback<GetBottomBannerResponse>() {
+        RestClient.getInstance(RestClient.API_URL).getBottomBanner(serviceToken, size, getDeviceId(), Base64.encodeToString(MyApplication.getContext().getPackageName().getBytes(), Base64.NO_WRAP)).enqueue(new Callback<GetBottomBannerResponse>() {
             @Override
             public void onResponse(Call<GetBottomBannerResponse> call, final Response<GetBottomBannerResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getResult() != null) {
@@ -235,7 +242,7 @@ public class Advertisement {
 
     private void handleGetBannerResponse(final Response<GetBottomBannerResponse> response, final GifImageView myImage, final boolean isFullPage) {
         assert response.body() != null;
-        String imageUrl = response.body().getResult().getImage();
+        final String imageUrl = response.body().getResult().getImage();
         link = response.body().getResult().getLink();
         Glide.with(view).load(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl).listener(new RequestListener<Drawable>() {
             @Override
@@ -248,10 +255,19 @@ public class Advertisement {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if(!isFullPage)
+                        if(!isFullPage) {
                             setImageContainerLayoutParams(myImage);
-                        sendFeedbackOnBannerLoaded(response.body().getResult().getToken());
-                        rootRL.setVisibility(View.VISIBLE);
+                            sendFeedbackOnBannerLoaded(response.body().getResult().getToken());
+                            rootRL.setVisibility(View.VISIBLE);
+                        }else{
+                            SharedMethode.getInstance().setContext(Advertisement.this);
+
+                            Intent adsIntent = new Intent(context, KaktusAdsActivity.class);
+                            adsIntent.putExtra(ADS_LINK, link);
+                            adsIntent.putExtra(ADS_URL, imageUrl);
+                            adsIntent.putExtra(ADS_TOKEN, response.body().getResult().getToken());
+                            context.startActivity(adsIntent);
+                        }
                     }
                 }, 1000);
                 return false;
@@ -260,7 +276,7 @@ public class Advertisement {
     }
 
     private void sendFeedbackOnBannerLoaded(String token) {
-        RestClient.getInstance(RestClient.API_FULL_PAGE_URL).sendFeedback(token).enqueue(new Callback<BaseResponse>() {
+        RestClient.getInstance(RestClient.API_URL).sendFeedback(token).enqueue(new Callback<BaseResponse>() {
             @Override
             public void onResponse(Call<BaseResponse> call, Response<BaseResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getStatus() == 200)
@@ -293,6 +309,25 @@ public class Advertisement {
     private String getDeviceId() {
         return String.valueOf(Settings.Secure.getString(MyApplication.getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID));
+    }
+
+    @Override
+    public void onCloseButtonClick() {
+
+    }
+
+    @Override
+    public void onAdsClick(String adsLink) {
+        if (!adsLink.startsWith("http://") && !adsLink.startsWith("https://"))
+            adsLink = "http://" + adsLink;
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(adsLink));
+        context.startActivity(browserIntent);
+    }
+
+    @Override
+    public void onImageLoaded(String serviceToken) {
+        sendFeedbackOnBannerLoaded(serviceToken);
+
     }
 
     public enum BANNER_SIZES {
