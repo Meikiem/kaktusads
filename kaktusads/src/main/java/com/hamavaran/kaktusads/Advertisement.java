@@ -225,7 +225,7 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
     }
 
     private void getBanner(String size, final GifImageView myImage, final boolean isFullPage) {
-        RestClient.getInstance(RestClient.API_URL).getBottomBanner(serviceToken, size, getDeviceId(), Base64.encodeToString(MyApplication.getContext().getPackageName().getBytes(), Base64.NO_WRAP)).enqueue(new Callback<GetBottomBannerResponse>() {
+        RestClient.getInstance(RestClient.API_URL).getBottomBanner(serviceToken, size, getDeviceId(), Base64.encodeToString(getApplicationContext().getPackageName().getBytes(), Base64.NO_WRAP)).enqueue(new Callback<GetBottomBannerResponse>() {
             @Override
             public void onResponse(Call<GetBottomBannerResponse> call, final Response<GetBottomBannerResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getResult() != null) {
@@ -307,7 +307,7 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
 
     @SuppressLint("HardwareIds")
     private String getDeviceId() {
-        return String.valueOf(Settings.Secure.getString(MyApplication.getContext().getContentResolver(),
+        return String.valueOf(Settings.Secure.getString(getApplicationContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID));
     }
 
