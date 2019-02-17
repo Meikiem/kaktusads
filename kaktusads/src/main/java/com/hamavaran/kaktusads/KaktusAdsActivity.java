@@ -1,10 +1,10 @@
 package com.hamavaran.kaktusads;
 
-import androidx.appcompat.app.AppCompatActivity;
 import pl.droidsonroids.gif.GifImageView;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
