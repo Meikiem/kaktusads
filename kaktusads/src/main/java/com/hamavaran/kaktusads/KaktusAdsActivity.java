@@ -1,23 +1,16 @@
 package com.hamavaran.kaktusads;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import pl.droidsonroids.gif.GifImageView;
 
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 public class KaktusAdsActivity extends AppCompatActivity {
 
@@ -58,18 +51,22 @@ public class KaktusAdsActivity extends AppCompatActivity {
 
         GifImageView myImage = findViewById(R.id.ivAdsContainer);
 
-        Glide.with(KaktusAdsActivity.this).load(loadedAdsUrl.startsWith("http") ? loadedAdsUrl : "http:" + loadedAdsUrl).listener(new RequestListener<Drawable>() {
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                return false;
-            }
 
+        ImageLoader.getInstance().displayImage(loadedAdsUrl.startsWith("http") ? loadedAdsUrl : "http:" + loadedAdsUrl, myImage, null, new ImageLoadingListener() {
             @Override
-            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                fullPageAdsListener.onImageLoaded(ADS_TOKEN);
-                return false;
+            public void onLoadingStarted(String imageUri, View view) {
             }
-        }).into(myImage);
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            }
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                fullPageAdsListener.onImageLoaded(ADS_TOKEN);
+            }
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+            }
+        });
 
         myImage.setOnClickListener(new View.OnClickListener() {
             @Override
