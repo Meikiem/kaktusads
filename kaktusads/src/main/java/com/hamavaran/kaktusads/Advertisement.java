@@ -57,13 +57,6 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
     private RelativeLayout rootRL;
     private String packageName = null;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
-        ImageLoader.getInstance().init(config);
-    }
-
     public Advertisement setCloseButtonEnabled(boolean isEnabled) {
         closeButtonEnabled = isEnabled;
         return this;
@@ -236,6 +229,8 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
     }
 
     private RelativeLayout initMainView() {
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context).build();
+        ImageLoader.getInstance().init(config);
         view = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
         rootRL = new RelativeLayout(context);
         rootRL.setLayoutParams(new RelativeLayout.LayoutParams(
