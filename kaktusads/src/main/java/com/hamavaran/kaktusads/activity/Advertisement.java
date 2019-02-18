@@ -1,13 +1,12 @@
-package com.hamavaran.kaktusads;
+package com.hamavaran.kaktusads.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -27,23 +26,27 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.hamavaran.kaktusads.R;
 import com.hamavaran.kaktusads.interfaces.BannerClickListener;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
 import com.hamavaran.kaktusads.rest.Model.BaseResponse;
 import com.hamavaran.kaktusads.rest.Model.GetBottomBannerResponse;
 import com.hamavaran.kaktusads.rest.RestClient;
+import com.hamavaran.kaktusads.util.NetworkChangeReceiver;
+import com.hamavaran.kaktusads.util.SharedMethode;
 
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.hamavaran.kaktusads.KaktusAdsActivity.ADS_LINK;
-import static com.hamavaran.kaktusads.KaktusAdsActivity.ADS_TOKEN;
-import static com.hamavaran.kaktusads.KaktusAdsActivity.ADS_URL;
+import static com.hamavaran.kaktusads.Constants.CONNECTIVITY_ACTION;
+import static com.hamavaran.kaktusads.activity.KaktusAdsActivity.ADS_LINK;
+import static com.hamavaran.kaktusads.activity.KaktusAdsActivity.ADS_TOKEN;
+import static com.hamavaran.kaktusads.activity.KaktusAdsActivity.ADS_URL;
 
 
-public class Advertisement extends AppCompatActivity implements FullPageAdsListener {
+public class Advertisement extends AppCompatActivity implements FullPageAdsListener, NetworkChangeReceiver.NetworkReceiverListener {
 
     private View view;
     private boolean closeButtonEnabled = false;
@@ -58,6 +61,11 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
     private String FULL_SIZE;
     private RelativeLayout rootRL;
     private String packageName = null;
+    IntentFilter intentFilter;
+    NetworkChangeReceiver receiver;
+    private BANNER_SIZES bannerSize;
+    private GifImageView myImage = null;
+    private boolean isFullPage = false;
 
     public Advertisement setCloseButtonEnabled(boolean isEnabled) {
         closeButtonEnabled = isEnabled;
@@ -110,14 +118,26 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
 
     private void loadBanner(BANNER_SIZES size) {
         if (checkBannerCallValidation()) return;
-        GifImageView myImage = initBottomAdUI();
-        getBanner(size.SIZE, myImage, false);
+        bannerSize = size;
+        myImage = initBottomAdUI();
+        chectNetworkState(false);
     }
 
     public void loadFullPageBanner() {
         if (checkBannerCallValidation()) return;
-        GifImageView myImage = initFullPageAdUI();
-        getBanner(FULL_SIZE, myImage, true);
+        myImage = initFullPageAdUI();
+        chectNetworkState(true);
+    }
+
+
+    public void chectNetworkState(final boolean isFullPage){
+        this.isFullPage  = isFullPage;
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(CONNECTIVITY_ACTION);
+        receiver = new NetworkChangeReceiver();
+        receiver.addListener(this);
+
+        context.registerReceiver(receiver, intentFilter);
     }
 
     private boolean checkBannerCallValidation() {
@@ -323,7 +343,6 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
         bottomBannerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         bottomBannerLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
 
-
         bottomBannerRL.setLayoutParams(bottomBannerLayoutParams);
         bottomBannerRL.setVisibility(View.VISIBLE);
     }
@@ -352,6 +371,20 @@ public class Advertisement extends AppCompatActivity implements FullPageAdsListe
         sendFeedbackOnBannerLoaded(serviceToken);
 
     }
+
+    @Override
+    public void available() {
+        if(isFullPage)
+            getBanner(FULL_SIZE, myImage, true);
+        else
+            getBanner(bannerSize.SIZE, myImage, false);
+    }
+
+    @Override
+    public void unavailable() {
+        Log.d("NETWORK STATE: ", "UNAVAILABLE");
+    }
+
 
     public enum BANNER_SIZES {
         SIZE_ONE(468, 60),

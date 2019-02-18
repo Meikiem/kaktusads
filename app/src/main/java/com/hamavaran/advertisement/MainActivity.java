@@ -1,16 +1,14 @@
 package com.hamavaran.advertisement;
 
-
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
-
-import com.hamavaran.kaktusads.Advertisement;
+import com.hamavaran.kaktusads.activity.Advertisement;
 import com.hamavaran.kaktusads.interfaces.BannerClickListener;
 
 
-
 public class MainActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

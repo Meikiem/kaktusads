@@ -1,4 +1,4 @@
-package com.hamavaran.kaktusads;
+package com.hamavaran.kaktusads.util;
 
 import android.content.Context;
 
