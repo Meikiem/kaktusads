@@ -22,7 +22,6 @@ public class KaktusAdsActivity extends AppCompatActivity {
     public static String ADS_LINK = "ads_link";
     public static String ADS_URL = "ads_url";
     public static String ADS_TOKEN = "ads_token";
-    private String loadedAdsLink = null;
     private String loadedAdsUrl = null;
     private String loadedAdsToken = null;
     private FullPageAdsListener fullPageAdsListener;
@@ -81,7 +80,6 @@ public class KaktusAdsActivity extends AppCompatActivity {
     private void loadExtras() {
         if (getIntent() != null && getIntent().getExtras() != null) {
             Bundle extras = getIntent().getExtras();
-            loadedAdsLink = extras.getString(ADS_LINK);
             loadedAdsUrl = extras.getString(ADS_URL);
             loadedAdsToken = extras.getString(ADS_TOKEN);
         }
