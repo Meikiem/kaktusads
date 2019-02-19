@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Advertisement.getInstance().into(MainActivity.this)
-                .withSize(Configutarion.BANNER_SIZES.SIZE_FOUR)
+                .withSize(Configutarion.BANNER_SIZES.FULL_SIZE)
                 .withTimeInterval(0).withCloseButton(false).setListener(new BannerClickListener() {
             @Override
             public void onBottomBannerCloseClick() {

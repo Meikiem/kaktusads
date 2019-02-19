@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.support.v4.content.pm.PermissionInfoCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
@@ -48,7 +47,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
     private Context context;
     private boolean closeButtonEnabled;
-    private String serviceToken = null;
+    private String serviceToken;
     private String packageName;
     private int timeInterval;
     private Configutarion.BANNER_SIZES adSize;
@@ -245,7 +244,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
     private void handleGetBannerResponse(final Response<GetBottomBannerResponse> response, final GifImageView myImage) {
         assert response.body() != null;
-        final String imageUrl = response.body().getResult().getImage();
+        final String imageUrl = response.body().getResult().getSrc();
         link = response.body().getResult().getLink();
 
         Glide.with(view).load(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl).addListener(new RequestListener<Drawable>() {

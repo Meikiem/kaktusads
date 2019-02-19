@@ -11,7 +11,7 @@ import retrofit2.http.Query;
 public interface RestApi {
     //5.160.219.166:6065/device/{token}/120x240/{deviceId}?pkgn={packageName}
 
-    @GET("device/{token}/{bannerSize}/{deviceId}")
+    @GET("device/banner/{token}/{bannerSize}/{deviceId}")
     Call<GetBottomBannerResponse> getBottomBanner(@Path("token") String token, @Path("bannerSize") String bannerSize, @Path("deviceId") String deviceId, @Query("pkgn") String packageName);
 
     @GET("device/sv/{receivedToken}")

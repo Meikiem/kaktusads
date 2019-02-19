@@ -13,20 +13,20 @@ public class GetBottomBannerResponse extends BaseResponse{
     }
 
     public static class BottomBannerResult {
-        private String image;
+        private String src;
         private String link;
         private String token;
         private String type;
 
-        public BottomBannerResult(String image, String link, String token, String type) {
-            this.image = image;
+        public BottomBannerResult(String src, String link, String token, String type) {
+            this.src = src;
             this.link = link;
             this.token = token;
             this.type = type;
         }
 
-        public String getImage() {
-            return image;
+        public String getSrc() {
+            return src;
         }
 
         public String getLink() {
