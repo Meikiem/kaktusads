@@ -5,8 +5,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -25,7 +27,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.hamavaran.kaktusads.R;
-import com.hamavaran.kaktusads.interfaces.BannerClickListener;
+import com.hamavaran.kaktusads.interfaces.AdClickListener;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
 import com.hamavaran.kaktusads.rest.Model.BaseResponse;
 import com.hamavaran.kaktusads.rest.Model.GetBottomBannerResponse;
@@ -53,10 +55,12 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
     private Configutarion.BANNER_SIZES adSize;
     private GifImageView myImage;
     private View view;
-    private BannerClickListener listener;
+    private AdClickListener listener;
     private RelativeLayout bottomBannerRL;
     private RelativeLayout rootRL;
     private String link = null;
+    private View fragmentView = null;
+    private NetworkChangeReceiver receiver;
 
 
     public AdvertisementLoader(Context context, boolean closeButtonEnabled, String servcieToken, String packageName, int timeInterval, Configutarion.BANNER_SIZES adSize) {
@@ -68,14 +72,36 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         this.adSize = adSize;
     }
 
-    public AdvertisementLoader setListener(BannerClickListener listener) {
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    public AdvertisementLoader setListener(AdClickListener listener) {
         this.listener = listener;
         return this;
     }
 
 
     public void loadAds() {
-
         if (timeInterval > 0)
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -85,12 +111,25 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
             }, timeInterval);
         else
             load();
+    }
 
+    public void loadAds(View view) {
+        this.view = view;
+        if (timeInterval > 0)
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    load();
+                }
+            }, timeInterval);
+        else
+            load();
     }
 
     private void load() {
         if (checkBannerCallValidation()) return;
-        myImage = adSize.IS_FULL_SIZE ? initFullPageAdUI() : initBottomAdUI();
+        if (!adSize.IS_FULL_SIZE)
+            myImage = initBottomAdUI();
         chectNetworkState();
     }
 
@@ -98,7 +137,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
     public void chectNetworkState() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(CONNECTIVITY_ACTION);
-        NetworkChangeReceiver receiver = new NetworkChangeReceiver();
+        receiver = new NetworkChangeReceiver();
         receiver.addListener(this);
 
         context.registerReceiver(receiver, intentFilter);
@@ -117,56 +156,10 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         return false;
     }
 
-
-    private GifImageView initFullPageAdUI() {
-        final RelativeLayout rootRL = initMainView();
-        GifImageView myImage = new GifImageView(context);
-        myImage.setAdjustViewBounds(true);
-        rootRL.addView(myImage);
-
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.MATCH_PARENT);
-
-        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-        myImage.setLayoutParams(layoutParams);
-        myImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-
-        ImageView closeButton = new ImageView(context);
-        closeButton.setImageResource(R.drawable.ic_close);
-        rootRL.addView(closeButton);
-
-        ((ViewGroup) view).addView(rootRL);
-
-
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (closeButtonEnabled)
-                    ((ViewGroup) view).removeView(rootRL);
-                listener.onBottomBannerCloseClick();
-            }
-        });
-
-        myImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!link.startsWith("http://") && !link.startsWith("https://"))
-                    link = "http://" + link;
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
-                context.startActivity(browserIntent);
-                ((ViewGroup) view).removeView(rootRL);
-            }
-        });
-        return myImage;
-    }
-
     private GifImageView initBottomAdUI() {
 
         final RelativeLayout rootRL = initMainView();
-        bottomBannerRL = new RelativeLayout(context);
+        bottomBannerRL = new RelativeLayout(view != null ? view.getContext() : context);
         bottomBannerRL.setVisibility(View.INVISIBLE);
 
         rootRL.addView(bottomBannerRL);
@@ -178,14 +171,14 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 
-        GifImageView myImage = new GifImageView(context);
+        GifImageView myImage = new GifImageView(view != null ? view.getContext() : context);
         myImage.setAdjustViewBounds(true);
         bottomBannerRL.addView(myImage);
         myImage.setLayoutParams(layoutParams);
         myImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
 
-        ImageView closeButton = new ImageView(context);
+        ImageView closeButton = new ImageView(view != null ? view.getContext() : context);
         closeButton.setImageResource(R.drawable.ic_close);
         bottomBannerRL.addView(closeButton);
 
@@ -197,7 +190,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
             public void onClick(View v) {
                 if (closeButtonEnabled)
                     ((ViewGroup) view).removeView(rootRL);
-                listener.onBottomBannerCloseClick();
+                listener.onButtonCloseClick();
             }
         });
 
@@ -208,16 +201,16 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
                     link = "http://" + link;
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
                 context.startActivity(browserIntent);
-                listener.onBottomBannerClick();
-                ((ViewGroup) view).removeView(rootRL);
+                listener.onAdClick();
             }
         });
         return myImage;
     }
 
     private RelativeLayout initMainView() {
-        view = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
-        rootRL = new RelativeLayout(context);
+        if (view == null)
+            view = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
+        rootRL = new RelativeLayout(view.getContext());
         rootRL.setLayoutParams(new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -247,35 +240,46 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         final String imageUrl = response.body().getResult().getSrc();
         link = response.body().getResult().getLink();
 
-        Glide.with(view).load(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl).addListener(new RequestListener<Drawable>() {
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                return false;
-            }
+        if (!adSize.IS_FULL_SIZE) {
+            Glide.with(view).load(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl).addListener(new RequestListener<Drawable>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    return false;
+                }
 
-            @Override
-            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!adSize.IS_FULL_SIZE) {
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
                             setImageContainerLayoutParams(myImage);
                             sendFeedbackOnBannerLoaded(response.body().getResult().getToken());
                             rootRL.setVisibility(View.VISIBLE);
-                        } else {
-                            SharedMethode.getInstance().setContext(AdvertisementLoader.this);
-
-                            Intent adsIntent = new Intent(context, KaktusAdsActivity.class);
-                            adsIntent.putExtra(ADS_LINK, link);
-                            adsIntent.putExtra(ADS_URL, imageUrl);
-                            adsIntent.putExtra(ADS_TOKEN, response.body().getResult().getToken());
-                            context.startActivity(adsIntent);
+                            try {
+                                context.unregisterReceiver(receiver);
+                            } catch (IllegalArgumentException e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                }, 1000);
-                return false;
+                    }, 1000);
+                    return false;
+                }
+            }).into(myImage);
+        } else {
+            SharedMethode.getInstance().setContext(AdvertisementLoader.this);
+            Intent adsIntent = new Intent(context, KaktusAdsActivity.class);
+            adsIntent.putExtra(ADS_LINK, link);
+            adsIntent.putExtra(ADS_URL, imageUrl);
+            adsIntent.putExtra(ADS_TOKEN, response.body().getResult().getToken());
+            context.startActivity(adsIntent);
+
+
+            try {
+                context.unregisterReceiver(receiver);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
             }
-        }).into(myImage);
+        }
 
     }
 
@@ -310,7 +314,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
     @Override
     public void onCloseButtonClick() {
-        listener.onBottomBannerCloseClick();
+        listener.onButtonCloseClick();
 
     }
 

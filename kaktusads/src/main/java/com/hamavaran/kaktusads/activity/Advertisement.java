@@ -1,9 +1,8 @@
 package com.hamavaran.kaktusads.activity;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 
-public class Advertisement extends AppCompatActivity  {
+public class Advertisement {
     private static String serviceToken = null;
     private static String packageName = null;
     private static Advertisement instance = null;

@@ -28,10 +28,10 @@ public class Configutarion {
     }
 
     public enum BANNER_SIZES {
-        SIZE_ONE(468, 60, false),
-        SIZE_TWO(728, 90, false),
-        SIZE_THREE(970, 90, false),
-        SIZE_FOUR(960, 144, false),
+        SIZE_468_x_60(468, 60, false),
+        SIZE_728_x_90(728, 90, false),
+        SIZE_970_x_90(970, 90, false),
+        SIZE_960_x_144(960, 144, false),
         FULL_SIZE(WIDTH, HEIGHT, true);
 
         final String SIZE;

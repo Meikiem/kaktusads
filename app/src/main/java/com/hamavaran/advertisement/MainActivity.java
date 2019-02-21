@@ -1,10 +1,9 @@
 package com.hamavaran.advertisement;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import com.hamavaran.kaktusads.activity.Advertisement;
-import com.hamavaran.kaktusads.activity.Configutarion;
-import com.hamavaran.kaktusads.interfaces.BannerClickListener;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -15,19 +14,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Advertisement.getInstance().into(MainActivity.this)
+/*        Advertisement.getInstance().into(MainActivity.this)
                 .withSize(Configutarion.BANNER_SIZES.FULL_SIZE)
-                .withTimeInterval(0).withCloseButton(false).setListener(new BannerClickListener() {
+                .withTimeInterval(0).withCloseButton(false).setListener(new AdClickListener() {
             @Override
-            public void onBottomBannerCloseClick() {
+            public void onButtonCloseClick() {
 
             }
 
             @Override
-            public void onBottomBannerClick() {
+            public void onAdClick() {
 
             }
-        }).loadAds();
+        }).loadAds();*/
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction =
+                fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fl, new BlankFragment());
+        fragmentTransaction.commit();
+
 
 
 
