@@ -5,6 +5,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
+import com.hamavaran.kaktusads.activity.Advertisement;
+import com.hamavaran.kaktusads.activity.Configuration;
+import com.hamavaran.kaktusads.interfaces.AdClickListener;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 /*        Advertisement.getInstance().into(MainActivity.this)
-                .withSize(Configutarion.BANNER_SIZES.FULL_SIZE)
+                .withSize(Configuration.BANNER_SIZES.FULL_SIZE)
                 .withTimeInterval(0).withCloseButton(false).setListener(new AdClickListener() {
             @Override
             public void onButtonCloseClick() {
@@ -34,7 +38,18 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.fl, new BlankFragment());
         fragmentTransaction.commit();
 
+        Advertisement.getInstance().into(MainActivity.this).withSize(Configuration.BANNER_SIZES.FULL_SIZE)
+                .withTimeInterval(0).withCloseButton(false).setListener(new AdClickListener() {
+            @Override
+            public void onButtonCloseClick() {
 
+            }
+
+            @Override
+            public void onAdClick() {
+
+            }
+        }).loadAds();
 
 
 

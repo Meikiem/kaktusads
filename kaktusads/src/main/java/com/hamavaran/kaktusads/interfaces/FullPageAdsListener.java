@@ -1,7 +1,5 @@
 package com.hamavaran.kaktusads.interfaces;
 
-import java.io.Serializable;
-
 public interface FullPageAdsListener{
 
     void onCloseButtonClick();

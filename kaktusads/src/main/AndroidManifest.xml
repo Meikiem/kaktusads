@@ -8,8 +8,7 @@
 
     <application>
         <activity android:name=".activity.KaktusAdsActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:launchMode="singleInstance"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 
 </manifest>

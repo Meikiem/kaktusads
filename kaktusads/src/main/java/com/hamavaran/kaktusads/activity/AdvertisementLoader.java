@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -52,18 +51,17 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
     private String serviceToken;
     private String packageName;
     private int timeInterval;
-    private Configutarion.BANNER_SIZES adSize;
+    private Configuration.BANNER_SIZES adSize;
     private GifImageView myImage;
     private View view;
     private AdClickListener listener;
     private RelativeLayout bottomBannerRL;
     private RelativeLayout rootRL;
     private String link = null;
-    private View fragmentView = null;
     private NetworkChangeReceiver receiver;
 
 
-    public AdvertisementLoader(Context context, boolean closeButtonEnabled, String servcieToken, String packageName, int timeInterval, Configutarion.BANNER_SIZES adSize) {
+    public AdvertisementLoader(Context context, boolean closeButtonEnabled, String servcieToken, String packageName, int timeInterval, Configuration.BANNER_SIZES adSize) {
         this.context = context;
         this.closeButtonEnabled = closeButtonEnabled;
         this.packageName = packageName;
@@ -73,7 +71,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(android.content.res.Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
 

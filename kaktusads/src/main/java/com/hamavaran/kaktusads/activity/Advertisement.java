@@ -20,8 +20,8 @@ public class Advertisement {
         Advertisement.serviceToken = serviceToken;
     }
 
-    public Configutarion into(Context context) {
-        return new Configutarion(context, serviceToken, packageName);
+    public Configuration into(Context context) {
+        return new Configuration(context, serviceToken, packageName);
     }
 
 }

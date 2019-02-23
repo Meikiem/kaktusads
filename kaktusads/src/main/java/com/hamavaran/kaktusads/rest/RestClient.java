@@ -10,7 +10,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RestClient {
 
     public static final String API_URL = "http://mobile.kaktoos.net/";
-    public static final String API_FULL_PAGE_URL = "http://192.168.88.245:6065/";
     private static OkHttpClient.Builder sHttpClient = new OkHttpClient.Builder();
     private static Retrofit.Builder sRetrofitBuilder = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create());

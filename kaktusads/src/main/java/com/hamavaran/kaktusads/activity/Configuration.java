@@ -5,7 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.DisplayMetrics;
 
-public class Configutarion {
+public class Configuration {
 
     private Context context;
     private String getServiceToken;
@@ -13,7 +13,7 @@ public class Configutarion {
     private static int WIDTH;
     private static int HEIGHT;
 
-    Configutarion(Context context, String serviceToken, String packageName) {
+    Configuration(Context context, String serviceToken, String packageName) {
         this.context = context;
         getServiceToken = serviceToken;
         getPackageName = packageName;
@@ -21,6 +21,7 @@ public class Configutarion {
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         WIDTH = displayMetrics.widthPixels;
         HEIGHT = displayMetrics.heightPixels;
+        refreshSizes();
     }
 
     public TimeInterval withSize(BANNER_SIZES size){
@@ -34,7 +35,7 @@ public class Configutarion {
         SIZE_960_x_144(960, 144, false),
         FULL_SIZE(WIDTH, HEIGHT, true);
 
-        final String SIZE;
+        String SIZE;
         final boolean IS_FULL_SIZE;
 
         BANNER_SIZES(int width, int height, boolean isFullSize) {
@@ -42,6 +43,14 @@ public class Configutarion {
             IS_FULL_SIZE = isFullSize;
         }
 
+    }
+
+    public static void refreshSizes() {
+        for (BANNER_SIZES e : BANNER_SIZES.values()) {
+            if(e.IS_FULL_SIZE){
+                e.SIZE = WIDTH + "x" + HEIGHT;
+            }
+        }
     }
 
 
