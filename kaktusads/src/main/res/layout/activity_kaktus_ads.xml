@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.KaktusAdsActivity">
+    tools:context=".activity.KaktusAdsActivity"
+    android:background="@android:color/black">
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/ivAdsContainer"

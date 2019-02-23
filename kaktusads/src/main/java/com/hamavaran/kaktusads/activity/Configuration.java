@@ -37,10 +37,14 @@ public class Configuration {
 
         String SIZE;
         final boolean IS_FULL_SIZE;
+        final int BANNER_WIDTH;
+        final int BANNER_HEIGHT;
 
         BANNER_SIZES(int width, int height, boolean isFullSize) {
             SIZE = width + "x" + height;
             IS_FULL_SIZE = isFullSize;
+            BANNER_WIDTH = width;
+            BANNER_HEIGHT = height;
         }
 
     }

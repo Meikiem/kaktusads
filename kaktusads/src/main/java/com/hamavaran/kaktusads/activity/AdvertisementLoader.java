@@ -59,6 +59,8 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
     private RelativeLayout rootRL;
     private String link = null;
     private NetworkChangeReceiver receiver;
+    private static int rootViewId = -1;
+    private static int currentRotation = -1;
 
 
     public AdvertisementLoader(Context context, boolean closeButtonEnabled, String servcieToken, String packageName, int timeInterval, Configuration.BANNER_SIZES adSize) {
@@ -68,6 +70,12 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         this.serviceToken = servcieToken;
         this.timeInterval = timeInterval;
         this.adSize = adSize;
+        if (currentRotation == -1)
+            currentRotation = context.getResources().getConfiguration().orientation;
+        if (currentRotation != context.getResources().getConfiguration().orientation) {
+            rootViewId = -1;
+            currentRotation = context.getResources().getConfiguration().orientation;
+        }
     }
 
     @Override
@@ -81,15 +89,13 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState)
-    {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
 
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState)
-    {
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -126,6 +132,8 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
     private void load() {
         if (checkBannerCallValidation()) return;
+        if (rootViewId != -1)
+            return;
         if (!adSize.IS_FULL_SIZE)
             myImage = initBottomAdUI();
         chectNetworkState();
@@ -157,14 +165,17 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
     private GifImageView initBottomAdUI() {
 
         final RelativeLayout rootRL = initMainView();
+        rootViewId = View.generateViewId();
+        rootRL.setId(rootViewId);
         bottomBannerRL = new RelativeLayout(view != null ? view.getContext() : context);
         bottomBannerRL.setVisibility(View.INVISIBLE);
+
 
         rootRL.addView(bottomBannerRL);
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
 
         layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
@@ -173,7 +184,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         myImage.setAdjustViewBounds(true);
         bottomBannerRL.addView(myImage);
         myImage.setLayoutParams(layoutParams);
-        myImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//        myImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
 
         ImageView closeButton = new ImageView(view != null ? view.getContext() : context);
@@ -238,6 +249,14 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         final String imageUrl = response.body().getResult().getSrc();
         link = response.body().getResult().getLink();
 
+
+        if (context instanceof Activity) {
+            Activity activity = (Activity) context;
+            if (activity.isFinishing() || activity.isDestroyed()) {
+                return;
+            }
+        }
+
         if (!adSize.IS_FULL_SIZE) {
             Glide.with(view).load(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl).addListener(new RequestListener<Drawable>() {
                 @Override
@@ -268,7 +287,10 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
             Intent adsIntent = new Intent(context, KaktusAdsActivity.class);
             adsIntent.putExtra(ADS_LINK, link);
             adsIntent.putExtra(ADS_URL, imageUrl);
-            adsIntent.putExtra(ADS_TOKEN, response.body().getResult().getToken());
+            if (response.body() != null) {
+                adsIntent.putExtra(ADS_TOKEN, response.body().getResult().getToken());
+            }
+            adsIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             context.startActivity(adsIntent);
 
 
@@ -301,7 +323,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
     private void setImageContainerLayoutParams(GifImageView myImage) {
         RelativeLayout.LayoutParams bottomBannerLayoutParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 myImage.getHeight());
         bottomBannerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         bottomBannerLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
@@ -345,4 +367,5 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         return String.valueOf(Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID));
     }
+
 }
