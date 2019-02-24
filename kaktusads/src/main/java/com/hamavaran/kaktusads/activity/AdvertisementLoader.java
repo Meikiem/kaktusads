@@ -197,8 +197,10 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (closeButtonEnabled)
+                if (closeButtonEnabled) {
                     ((ViewGroup) view).removeView(rootRL);
+                    rootViewId = -1;
+                }
                 listener.onButtonCloseClick();
             }
         });
@@ -378,6 +380,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
             closeAds = true;
             if (view != null && view.findViewById(rootViewId) != null) {
                 ((ViewGroup) view).removeView(rootRL);
+                rootViewId = -1;
                 closeAds = false;
             }
         } catch (Exception ignored) {
