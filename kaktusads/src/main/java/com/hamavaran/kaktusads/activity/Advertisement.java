@@ -6,10 +6,12 @@ public class Advertisement {
     private static String serviceToken = null;
     private static String packageName = null;
     private static Advertisement instance = null;
+    private Configuration configuration;
 
-    public static Advertisement getInstance(){
-        if(instance!= null)
-            return instance;{
+    public static Advertisement getInstance() {
+        if (instance != null)
+            return instance;
+        {
         }
         instance = new Advertisement();
         return instance;
@@ -21,7 +23,14 @@ public class Advertisement {
     }
 
     public Configuration into(Context context) {
-        return new Configuration(context, serviceToken, packageName);
+        configuration = new Configuration(context, serviceToken, packageName);
+        return configuration;
+    }
+
+    public void closeAds() {
+        if (configuration != null) {
+            configuration.closeAds();
+        }
     }
 
 }

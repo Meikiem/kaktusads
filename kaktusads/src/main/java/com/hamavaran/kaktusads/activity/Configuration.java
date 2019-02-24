@@ -3,6 +3,7 @@ package com.hamavaran.kaktusads.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.print.PrinterId;
 import android.util.DisplayMetrics;
 
 public class Configuration {
@@ -12,6 +13,7 @@ public class Configuration {
     private String getPackageName;
     private static int WIDTH;
     private static int HEIGHT;
+    private AdvertisementLoader advertisementLoader;
 
     Configuration(Context context, String serviceToken, String packageName) {
         this.context = context;
@@ -24,7 +26,7 @@ public class Configuration {
         refreshSizes();
     }
 
-    public TimeInterval withSize(BANNER_SIZES size){
+    public TimeInterval withSize(BANNER_SIZES size) {
         return new TimeInterval(context, getServiceToken, getPackageName, size);
     }
 
@@ -49,16 +51,16 @@ public class Configuration {
 
     }
 
-    public static void refreshSizes() {
+    private static void refreshSizes() {
         for (BANNER_SIZES e : BANNER_SIZES.values()) {
-            if(e.IS_FULL_SIZE){
+            if (e.IS_FULL_SIZE) {
                 e.SIZE = WIDTH + "x" + HEIGHT;
             }
         }
     }
 
 
-    public class TimeInterval{
+    public class TimeInterval {
         private Context context;
         private String serviceToken;
         private String packageName;
@@ -71,13 +73,13 @@ public class Configuration {
             this.adSize = adSize;
         }
 
-        public CloseButtonStatus withTimeInterval(int timeInterval){
+        public CloseButtonStatus withTimeInterval(int timeInterval) {
             return new CloseButtonStatus(context, this.serviceToken, this.packageName, timeInterval, adSize);
         }
     }
 
 
-    public class CloseButtonStatus{
+    public class CloseButtonStatus {
         private int timeInterval;
         private Context context;
         private String serviceToken;
@@ -92,9 +94,43 @@ public class Configuration {
             this.adSize = adSize;
         }
 
-        public AdvertisementLoader withCloseButton(boolean closeButtonStatus){
-            return new AdvertisementLoader(this.context, closeButtonStatus, this.serviceToken, this.packageName, this.timeInterval, adSize);
+        public BannerPosition withCloseButton(boolean closeButtonStatus) {
+            return new BannerPosition(timeInterval, context, serviceToken, packageName, adSize, closeButtonStatus);
         }
+    }
+
+
+    public class BannerPosition{
+        private int timeInterval;
+        private Context context;
+        private String serviceToken;
+        private String packageName;
+        private BANNER_SIZES adSize;
+        private boolean closeButtonStatus;
+
+        BannerPosition(int timeInterval, Context context, String serviceToken, String packageName, BANNER_SIZES adSize, boolean closeButtonStatus) {
+            this.timeInterval = timeInterval;
+            this.context = context;
+            this.serviceToken = serviceToken;
+            this.packageName = packageName;
+            this.adSize = adSize;
+            this.closeButtonStatus = closeButtonStatus;
+        }
+
+        public AdvertisementLoader position(BANNER_POSITION position) {
+            advertisementLoader = new AdvertisementLoader(this.context, closeButtonStatus, this.serviceToken, this.packageName, this.timeInterval, adSize, position);
+            return advertisementLoader;
+        }
+    }
+
+    public enum BANNER_POSITION {
+        TOP,
+        BOTTOM
+    }
+
+    void closeAds() {
+        if (advertisementLoader != null)
+            advertisementLoader.closeAds();
     }
 
 }

@@ -61,9 +61,11 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
     private NetworkChangeReceiver receiver;
     private static int rootViewId = -1;
     private static int currentRotation = -1;
+    private boolean closeAds = false;
+    private Configuration.BANNER_POSITION position;
 
 
-    public AdvertisementLoader(Context context, boolean closeButtonEnabled, String servcieToken, String packageName, int timeInterval, Configuration.BANNER_SIZES adSize) {
+    public AdvertisementLoader(Context context, boolean closeButtonEnabled, String servcieToken, String packageName, int timeInterval, Configuration.BANNER_SIZES adSize, Configuration.BANNER_POSITION position) {
         this.context = context;
         this.closeButtonEnabled = closeButtonEnabled;
         this.packageName = packageName;
@@ -76,6 +78,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
             rootViewId = -1;
             currentRotation = context.getResources().getConfiguration().orientation;
         }
+        this.position = position;
     }
 
     @Override
@@ -136,11 +139,11 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
             return;
         if (!adSize.IS_FULL_SIZE)
             myImage = initBottomAdUI();
-        chectNetworkState();
+        checkNetworkState();
     }
 
 
-    public void chectNetworkState() {
+    public void checkNetworkState() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(CONNECTIVITY_ACTION);
         receiver = new NetworkChangeReceiver();
@@ -165,8 +168,6 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
     private GifImageView initBottomAdUI() {
 
         final RelativeLayout rootRL = initMainView();
-        rootViewId = View.generateViewId();
-        rootRL.setId(rootViewId);
         bottomBannerRL = new RelativeLayout(view != null ? view.getContext() : context);
         bottomBannerRL.setVisibility(View.INVISIBLE);
 
@@ -178,7 +179,6 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
         layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 
         GifImageView myImage = new GifImageView(view != null ? view.getContext() : context);
         myImage.setAdjustViewBounds(true);
@@ -225,6 +225,8 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
                 RelativeLayout.LayoutParams.MATCH_PARENT));
 
         rootRL.setVisibility(View.INVISIBLE);
+        rootViewId = View.generateViewId();
+        rootRL.setId(rootViewId);
         return rootRL;
     }
 
@@ -232,7 +234,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         RestClient.getInstance(RestClient.API_URL).getBottomBanner(serviceToken, size, getDeviceId(), Base64.encodeToString(packageName.getBytes(), Base64.NO_WRAP)).enqueue(new Callback<GetBottomBannerResponse>() {
             @Override
             public void onResponse(Call<GetBottomBannerResponse> call, final Response<GetBottomBannerResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getResult() != null) {
+                if (response.isSuccessful() && response.body() != null && response.body().getResult() != null && !closeAds) {
                     handleGetBannerResponse(response, myImage);
                 }
             }
@@ -294,6 +296,8 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
             context.startActivity(adsIntent);
 
 
+
+
             try {
                 context.unregisterReceiver(receiver);
             } catch (IllegalArgumentException e) {
@@ -325,7 +329,8 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         RelativeLayout.LayoutParams bottomBannerLayoutParams = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 myImage.getHeight());
-        bottomBannerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        if(position == Configuration.BANNER_POSITION.BOTTOM)
+            bottomBannerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         bottomBannerLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
 
         bottomBannerRL.setLayoutParams(bottomBannerLayoutParams);
@@ -367,5 +372,18 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         return String.valueOf(Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID));
     }
+
+    public void closeAds() {
+        try {
+            closeAds = true;
+            if (view != null && view.findViewById(rootViewId) != null) {
+                ((ViewGroup) view).removeView(rootRL);
+                closeAds = false;
+            }
+        } catch (Exception ignored) {
+            Log.d("ClOSE ADDS FACED: ", "ERROR");
+        }
+    }
+
 
 }
