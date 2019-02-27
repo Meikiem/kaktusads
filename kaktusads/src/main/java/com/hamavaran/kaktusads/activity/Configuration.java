@@ -3,7 +3,6 @@ package com.hamavaran.kaktusads.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.print.PrinterId;
 import android.util.DisplayMetrics;
 
 public class Configuration {
@@ -35,7 +34,8 @@ public class Configuration {
         SIZE_728_x_90(728, 90, false),
         SIZE_970_x_90(970, 90, false),
         SIZE_960_x_144(960, 144, false),
-        FULL_SIZE(WIDTH, HEIGHT, true);
+        FULL_SIZE(WIDTH, HEIGHT, true),
+        FULL_SIZE_VIDEO(WIDTH, HEIGHT, true);
 
         String SIZE;
         final boolean IS_FULL_SIZE;

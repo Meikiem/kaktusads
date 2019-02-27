@@ -2,6 +2,7 @@ package com.hamavaran.advertisement;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.hamavaran.kaktusads.activity.Advertisement;
 import com.hamavaran.kaktusads.activity.Configuration;
@@ -27,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        Advertisement.getInstance().into(MainActivity.this).withSize(Configuration.BANNER_SIZES.SIZE_960_x_144)
-                .withTimeInterval(0).withCloseButton(true).position(Configuration.BANNER_POSITION.BOTTOM).setListener(new AdClickListener() {
+        Advertisement.getInstance().into(MainActivity.this).withSize(Configuration.BANNER_SIZES.FULL_SIZE_VIDEO)
+                .withTimeInterval(0).withCloseButton(true).position(Configuration.BANNER_POSITION.TOP).setListener(new AdClickListener() {
             @Override
             public void onButtonCloseClick() {
 

@@ -43,6 +43,7 @@ import static com.hamavaran.kaktusads.Constants.CONNECTIVITY_ACTION;
 import static com.hamavaran.kaktusads.activity.KaktusAdsActivity.ADS_LINK;
 import static com.hamavaran.kaktusads.activity.KaktusAdsActivity.ADS_TOKEN;
 import static com.hamavaran.kaktusads.activity.KaktusAdsActivity.ADS_URL;
+import static com.hamavaran.kaktusads.activity.KaktusAdsActivity.IS_VIDEO_AD;
 
 public class AdvertisementLoader extends AppCompatActivity implements FullPageAdsListener, NetworkChangeReceiver.NetworkReceiverListener {
 
@@ -229,6 +230,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         rootRL.setVisibility(View.INVISIBLE);
         rootViewId = View.generateViewId();
         rootRL.setId(rootViewId);
+        rootRL.setFitsSystemWindows(true);
         return rootRL;
     }
 
@@ -261,7 +263,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
             }
         }
 
-        if (!adSize.IS_FULL_SIZE) {
+        if (!adSize.IS_FULL_SIZE && adSize != Configuration.BANNER_SIZES.FULL_SIZE_VIDEO) {
             Glide.with(view).load(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl).addListener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -294,10 +296,9 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
             if (response.body() != null) {
                 adsIntent.putExtra(ADS_TOKEN, response.body().getResult().getToken());
             }
+            adsIntent.putExtra(IS_VIDEO_AD, adSize == Configuration.BANNER_SIZES.FULL_SIZE_VIDEO);
             adsIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             context.startActivity(adsIntent);
-
-
 
 
             try {
@@ -331,7 +332,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         RelativeLayout.LayoutParams bottomBannerLayoutParams = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 myImage.getHeight());
-        if(position == Configuration.BANNER_POSITION.BOTTOM)
+        if (position == Configuration.BANNER_POSITION.BOTTOM)
             bottomBannerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         bottomBannerLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
 
@@ -361,7 +362,26 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
     @Override
     public void available() {
-        getBanner(adSize.SIZE, myImage);
+        if (adSize == Configuration.BANNER_SIZES.FULL_SIZE_VIDEO) {
+            getVideoBanner();
+        } else
+            getBanner(adSize.SIZE, myImage);
+    }
+
+    private void getVideoBanner() {
+        RestClient.getInstance(RestClient.API_URL).getVideoBanner(serviceToken, getDeviceId(), Base64.encodeToString(packageName.getBytes(), Base64.NO_WRAP)).enqueue(new Callback<GetBottomBannerResponse>() {
+            @Override
+            public void onResponse(Call<GetBottomBannerResponse> call, Response<GetBottomBannerResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getResult() != null && !closeAds) {
+                    handleGetBannerResponse(response, myImage);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetBottomBannerResponse> call, Throwable t) {
+                Log.d("LOAD VIDEO AD: ", "FAILURE");
+            }
+        });
     }
 
     @Override

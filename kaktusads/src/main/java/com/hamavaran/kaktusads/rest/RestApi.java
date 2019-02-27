@@ -16,4 +16,9 @@ public interface RestApi {
     @GET("device/sv/{receivedToken}")
     Call<BaseResponse> sendFeedback(@Path("receivedToken") String receivedTokeneviceId);
 
+
+    @GET("device/video/{token}/{deviceId}")
+    Call<GetBottomBannerResponse> getVideoBanner(@Path("token") String token, @Path("deviceId") String deviceId, @Query("pkgn") String packageName);
+
+
 }

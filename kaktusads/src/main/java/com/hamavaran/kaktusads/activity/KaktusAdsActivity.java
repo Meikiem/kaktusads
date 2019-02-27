@@ -1,16 +1,22 @@
 package com.hamavaran.kaktusads.activity;
 
 import pl.droidsonroids.gif.GifImageView;
+
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -24,12 +30,17 @@ import com.hamavaran.kaktusads.util.SharedMethode;
 public class KaktusAdsActivity extends AppCompatActivity {
 
     public static String ADS_LINK = "ads_link";
+    public static String IS_VIDEO_AD = "is_video_ad";
     public static String ADS_URL = "ads_url";
     public static String ADS_TOKEN = "ads_token";
     private String loadedAdsUrl = null;
     private String loadedAdsToken = null;
     private String loadedAdsLink = null;
     private FullPageAdsListener fullPageAdsListener;
+    private RelativeLayout rlVideoContainer;
+    VideoView vv;
+    ProgressBar pb;
+    private boolean isVideoAd = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +75,8 @@ public class KaktusAdsActivity extends AppCompatActivity {
     }
 
     private void initUI() {
-        ImageView ivClose = findViewById(R.id.ivClose);
-
-        ivClose.setOnClickListener(new View.OnClickListener() {
+        rlVideoContainer = findViewById(R.id.rlVideoContainer);
+        findViewById(R.id.ivClose).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (fullPageAdsListener != null)
@@ -75,6 +85,62 @@ public class KaktusAdsActivity extends AppCompatActivity {
             }
         });
 
+        if (isVideoAd) {
+            rlVideoContainer.setVisibility(View.VISIBLE);
+            findViewById(R.id.ivAdsContainer).setVisibility(View.GONE);
+            initVideoAd();
+        } else {
+            rlVideoContainer.setVisibility(View.GONE);
+            findViewById(R.id.ivAdsContainer).setVisibility(View.VISIBLE);
+            initImageAd();
+        }
+    }
+
+    private void initVideoAd() {
+        pb = findViewById(R.id.pb);
+        pb.setProgress(0);
+        pb.setMax(100);
+
+        vv = findViewById(R.id.vv);
+        vv.setVideoURI(Uri.parse(loadedAdsUrl.startsWith("http") ? loadedAdsUrl : "http:" + loadedAdsUrl));
+
+        final int[] duration = {0};
+        vv.start();
+        vv.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+            public void onPrepared(MediaPlayer mp) {
+                duration[0] = vv.getDuration();
+                startProgress(duration[0]);
+            }
+        });
+
+        vv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fullPageAdsListener.onAdsClick(loadedAdsLink);
+                finish();
+            }
+        });
+
+
+    }
+
+    private void startProgress(final int duration) {
+        if (pb.getProgress() < 100 && duration > 0) {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    pb.setProgress((vv.getCurrentPosition() * 100) / duration);
+                    if (pb.getProgress() == 100)
+                        finish();
+                    handler.postDelayed(this, 500);
+                }
+            }, 500);
+        }
+    }
+
+    private void initImageAd() {
         GifImageView myImage = findViewById(R.id.ivAdsContainer);
 
         Glide.with(KaktusAdsActivity.this).load(loadedAdsUrl.startsWith("http") ? loadedAdsUrl : "http:" + loadedAdsUrl).addListener(new RequestListener<Drawable>() {
@@ -107,6 +173,7 @@ public class KaktusAdsActivity extends AppCompatActivity {
             loadedAdsUrl = extras.getString(ADS_URL);
             loadedAdsToken = extras.getString(ADS_TOKEN);
             loadedAdsLink = extras.getString(ADS_LINK);
+            isVideoAd = extras.getBoolean(IS_VIDEO_AD);
         }
     }
 
