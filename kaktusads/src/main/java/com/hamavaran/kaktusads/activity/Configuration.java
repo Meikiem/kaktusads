@@ -35,7 +35,9 @@ public class Configuration {
         SIZE_970_x_90(970, 90, false),
         SIZE_960_x_144(960, 144, false),
         FULL_SIZE(WIDTH, HEIGHT, true),
-        FULL_SIZE_VIDEO(WIDTH, HEIGHT, true);
+        FULL_SIZE_VIDEO(WIDTH, HEIGHT, true),
+        VIDEO_POP_UP(WIDTH, HEIGHT, false),
+        IMAGE_POP_UP(WIDTH, HEIGHT, false);
 
         String SIZE;
         final boolean IS_FULL_SIZE;

@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
@@ -26,6 +28,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.hamavaran.kaktusads.R;
+import com.hamavaran.kaktusads.fragment.AdsDialogFragment;
 import com.hamavaran.kaktusads.interfaces.AdClickListener;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
 import com.hamavaran.kaktusads.rest.Model.BaseResponse;
@@ -64,6 +67,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
     private static int currentRotation = -1;
     private boolean closeAds = false;
     private Configuration.BANNER_POSITION position;
+    private boolean isFragment = false;
 
 
     public AdvertisementLoader(Context context, boolean closeButtonEnabled, String servcieToken, String packageName, int timeInterval, Configuration.BANNER_SIZES adSize, Configuration.BANNER_POSITION position) {
@@ -110,6 +114,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
 
     public void loadAds() {
+        isFragment = false;
         if (timeInterval > 0)
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -123,6 +128,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
     public void loadAds(View view) {
         this.view = view;
+        isFragment = true;
         if (timeInterval > 0)
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -190,10 +196,8 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
         ImageView closeButton = new ImageView(view != null ? view.getContext() : context);
         closeButton.setImageResource(R.drawable.ic_close);
+        closeButton.setColorFilter(ContextCompat.getColor(context, android.R.color.white), android.graphics.PorterDuff.Mode.MULTIPLY);
         bottomBannerRL.addView(closeButton);
-
-        ((ViewGroup) view).addView(rootRL);
-
 
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,6 +209,10 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
                 listener.onButtonCloseClick();
             }
         });
+
+
+        ((ViewGroup) view).addView(rootRL);
+
 
         myImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -263,50 +271,82 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
             }
         }
 
-        if (!adSize.IS_FULL_SIZE && adSize != Configuration.BANNER_SIZES.FULL_SIZE_VIDEO) {
-            Glide.with(view).load(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl).addListener(new RequestListener<Drawable>() {
-                @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                    return false;
-                }
 
-                @Override
-                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            setImageContainerLayoutParams(myImage);
-                            sendFeedbackOnBannerLoaded(response.body().getResult().getToken());
-                            rootRL.setVisibility(View.VISIBLE);
-                            try {
-                                context.unregisterReceiver(receiver);
-                            } catch (IllegalArgumentException e) {
-                                e.printStackTrace();
+        switch (adSize) {
+            case SIZE_468_x_60:
+            case SIZE_728_x_90:
+            case SIZE_960_x_144:
+            case SIZE_970_x_90:
+                Glide.with(view).load(imageUrl.startsWith("http") ? imageUrl : "http:" + imageUrl).addListener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                setImageContainerLayoutParams(myImage);
+                                sendFeedbackOnBannerLoaded(response.body().getResult().getToken());
+                                rootRL.setVisibility(View.VISIBLE);
+                                try {
+                                    context.unregisterReceiver(receiver);
+                                } catch (IllegalArgumentException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        }
-                    }, 1000);
-                    return false;
+                        }, 1000);
+                        return false;
+                    }
+                }).into(myImage);
+                break;
+            case FULL_SIZE:
+            case FULL_SIZE_VIDEO:
+                SharedMethode.getInstance().setContext(AdvertisementLoader.this);
+                Intent adsIntent = new Intent(context, KaktusAdsActivity.class);
+                adsIntent.putExtra(ADS_LINK, link);
+                adsIntent.putExtra(ADS_URL, imageUrl);
+                if (response.body() != null) {
+                    adsIntent.putExtra(ADS_TOKEN, response.body().getResult().getToken());
                 }
-            }).into(myImage);
-        } else {
-            SharedMethode.getInstance().setContext(AdvertisementLoader.this);
-            Intent adsIntent = new Intent(context, KaktusAdsActivity.class);
-            adsIntent.putExtra(ADS_LINK, link);
-            adsIntent.putExtra(ADS_URL, imageUrl);
-            if (response.body() != null) {
-                adsIntent.putExtra(ADS_TOKEN, response.body().getResult().getToken());
-            }
-            adsIntent.putExtra(IS_VIDEO_AD, adSize == Configuration.BANNER_SIZES.FULL_SIZE_VIDEO);
-            adsIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            context.startActivity(adsIntent);
+                adsIntent.putExtra(IS_VIDEO_AD, adSize == Configuration.BANNER_SIZES.FULL_SIZE_VIDEO);
+                adsIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                context.startActivity(adsIntent);
 
 
-            try {
-                context.unregisterReceiver(receiver);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
+                try {
+                    context.unregisterReceiver(receiver);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case VIDEO_POP_UP:
+            case IMAGE_POP_UP:
+                String adsToken = null;
+                if (response.body() != null) {
+                    adsToken = response.body().getResult().getToken();
+                }
+                AdsDialogFragment.newInstance(link, adSize == Configuration.BANNER_SIZES.VIDEO_POP_UP, imageUrl, adsToken, new AdsDialogFragment.AdsDialogListener() {
+                    @Override
+                    public void onClose(DialogFragment dialog) {
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onLinkClick(DialogFragment dialog, String loadedAdsLink) {
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onImageLoaded(String adsToken) {
+                        Log.d("", "");
+                    }
+                }).show(((AppCompatActivity) context).getSupportFragmentManager(), "tag");
+                break;
         }
+
 
     }
 
@@ -330,14 +370,16 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
     private void setImageContainerLayoutParams(GifImageView myImage) {
         RelativeLayout.LayoutParams bottomBannerLayoutParams = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
+                myImage.getWidth(),
                 myImage.getHeight());
         if (position == Configuration.BANNER_POSITION.BOTTOM)
             bottomBannerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         bottomBannerLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+        bottomBannerRL.setVisibility(View.VISIBLE);
+        bottomBannerRL.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black));
 
         bottomBannerRL.setLayoutParams(bottomBannerLayoutParams);
-        bottomBannerRL.setVisibility(View.VISIBLE);
+
     }
 
     @Override
@@ -362,7 +404,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
     @Override
     public void available() {
-        if (adSize == Configuration.BANNER_SIZES.FULL_SIZE_VIDEO) {
+        if (adSize == Configuration.BANNER_SIZES.FULL_SIZE_VIDEO || adSize == Configuration.BANNER_SIZES.VIDEO_POP_UP) {
             getVideoBanner();
         } else
             getBanner(adSize.SIZE, myImage);
