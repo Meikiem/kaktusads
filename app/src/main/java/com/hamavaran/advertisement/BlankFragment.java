@@ -40,7 +40,7 @@ public class BlankFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Advertisement.getInstance().into(getContext()).withSize(Configuration.BANNER_SIZES.VIDEO_POP_UP)
+        Advertisement.getInstance().into(getContext()).withSize(Configuration.BANNER_SIZES.SIZE_468_x_60)
                 .withTimeInterval(0).withCloseButton(true).position(Configuration.BANNER_POSITION.BOTTOM).setListener(new AdClickListener() {
             @Override
             public void onButtonCloseClick() {

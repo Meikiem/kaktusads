@@ -1,7 +1,5 @@
 package com.hamavaran.kaktusads.activity;
 
-import pl.droidsonroids.gif.GifImageView;
-
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -27,6 +25,8 @@ import com.hamavaran.kaktusads.R;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
 import com.hamavaran.kaktusads.util.SharedMethode;
 
+import pl.droidsonroids.gif.GifImageView;
+
 public class KaktusAdsActivity extends AppCompatActivity {
 
     public static String ADS_LINK = "ads_link";
@@ -38,8 +38,8 @@ public class KaktusAdsActivity extends AppCompatActivity {
     private String loadedAdsLink = null;
     private FullPageAdsListener fullPageAdsListener;
     private RelativeLayout rlVideoContainer;
-    VideoView vv;
-    ProgressBar pb;
+    private VideoView vv;
+    private ProgressBar pb;
     private boolean isVideoAd = false;
 
     @Override
@@ -66,6 +66,8 @@ public class KaktusAdsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         lockDeviceRotation(false);
+        vv.pause();
+        finish();
         super.onPause();
     }
 

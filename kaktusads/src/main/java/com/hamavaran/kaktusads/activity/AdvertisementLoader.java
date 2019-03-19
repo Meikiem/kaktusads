@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -182,22 +183,23 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         rootRL.addView(bottomBannerRL);
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, adSize.BANNER_WIDTH / 2, context.getResources().getDisplayMetrics()),
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, adSize.BANNER_HEIGHT / 2, context.getResources().getDisplayMetrics()));
 
         layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
 
-        GifImageView myImage = new GifImageView(view != null ? view.getContext() : context);
+        myImage = new GifImageView(view != null ? view.getContext() : context);
         myImage.setAdjustViewBounds(true);
         bottomBannerRL.addView(myImage);
         myImage.setLayoutParams(layoutParams);
-//        myImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        myImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
 
         ImageView closeButton = new ImageView(view != null ? view.getContext() : context);
         closeButton.setImageResource(R.drawable.ic_close);
         closeButton.setColorFilter(ContextCompat.getColor(context, android.R.color.white), android.graphics.PorterDuff.Mode.MULTIPLY);
         bottomBannerRL.addView(closeButton);
+
 
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -224,6 +226,9 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
                 listener.onAdClick();
             }
         });
+
+        closeButton.setVisibility(closeButtonEnabled ? View.VISIBLE : View.GONE);
+
         return myImage;
     }
 
@@ -242,7 +247,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         return rootRL;
     }
 
-    private void getBanner(String size, final GifImageView myImage) {
+    private void getBanner(String size) {
         RestClient.getInstance(RestClient.API_URL).getBottomBanner(serviceToken, size, getDeviceId(), Base64.encodeToString(packageName.getBytes(), Base64.NO_WRAP)).enqueue(new Callback<GetBottomBannerResponse>() {
             @Override
             public void onResponse(Call<GetBottomBannerResponse> call, final Response<GetBottomBannerResponse> response) {
@@ -288,7 +293,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                setImageContainerLayoutParams(myImage);
+                                setImageContainerLayoutParams();
                                 sendFeedbackOnBannerLoaded(response.body().getResult().getToken());
                                 rootRL.setVisibility(View.VISIBLE);
                                 try {
@@ -368,10 +373,10 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
 
     }
 
-    private void setImageContainerLayoutParams(GifImageView myImage) {
+    private void setImageContainerLayoutParams() {
         RelativeLayout.LayoutParams bottomBannerLayoutParams = new RelativeLayout.LayoutParams(
-                myImage.getWidth(),
-                myImage.getHeight());
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, adSize.BANNER_WIDTH / 2, context.getResources().getDisplayMetrics()),
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, adSize.BANNER_HEIGHT / 2, context.getResources().getDisplayMetrics()));
         if (position == Configuration.BANNER_POSITION.BOTTOM)
             bottomBannerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         bottomBannerLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
@@ -407,7 +412,7 @@ public class AdvertisementLoader extends AppCompatActivity implements FullPageAd
         if (adSize == Configuration.BANNER_SIZES.FULL_SIZE_VIDEO || adSize == Configuration.BANNER_SIZES.VIDEO_POP_UP) {
             getVideoBanner();
         } else
-            getBanner(adSize.SIZE, myImage);
+            getBanner(adSize.SIZE);
     }
 
     private void getVideoBanner() {
