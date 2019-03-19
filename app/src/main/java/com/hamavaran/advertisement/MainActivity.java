@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.fl, new BlankFragment());
         fragmentTransaction.commit();*/
 
-        Advertisement.getInstance().into(MainActivity.this).withSize(Configuration.BANNER_SIZES.SIZE_728_x_90)
+        Advertisement.getInstance().into(MainActivity.this).withSize(Configuration.BANNER_SIZES.FULL_SIZE_VIDEO)
                 .withTimeInterval(0).withCloseButton(true).position(Configuration.BANNER_POSITION.BOTTOM).setListener(new AdClickListener() {
             @Override
             public void onButtonCloseClick() {

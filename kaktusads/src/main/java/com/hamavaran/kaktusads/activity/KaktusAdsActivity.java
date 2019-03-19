@@ -7,9 +7,11 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
@@ -21,6 +23,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.emredavarci.circleprogressbar.CircleProgressBar;
 import com.hamavaran.kaktusads.R;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
 import com.hamavaran.kaktusads.util.SharedMethode;
@@ -41,6 +44,8 @@ public class KaktusAdsActivity extends AppCompatActivity {
     private VideoView vv;
     private ProgressBar pb;
     private boolean isVideoAd = false;
+    private CircleProgressBar pbClose;
+    final int[] duration = {0};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +86,11 @@ public class KaktusAdsActivity extends AppCompatActivity {
         findViewById(R.id.ivClose).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fullPageAdsListener != null)
-                    fullPageAdsListener.onCloseButtonClick();
-                finish();
+                if(pbClose.getVisibility() == View.GONE) {
+                    if (fullPageAdsListener != null)
+                        fullPageAdsListener.onCloseButtonClick();
+                    finish();
+                }
             }
         });
 
@@ -100,19 +107,26 @@ public class KaktusAdsActivity extends AppCompatActivity {
 
     private void initVideoAd() {
         pb = findViewById(R.id.pb);
+        pbClose = findViewById(R.id.pbClose);
         pb.setProgress(0);
         pb.setMax(100);
 
         vv = findViewById(R.id.vv);
         vv.setVideoURI(Uri.parse(loadedAdsUrl.startsWith("http") ? loadedAdsUrl : "http:" + loadedAdsUrl));
 
-        final int[] duration = {0};
         vv.start();
         vv.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
             public void onPrepared(MediaPlayer mp) {
                 duration[0] = vv.getDuration();
                 startProgress(duration[0]);
+
+                if (duration[0] >= 0) {
+                    pbClose.setVisibility(View.VISIBLE);
+                    countDown();
+                } else {
+                    pbClose.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -124,7 +138,34 @@ public class KaktusAdsActivity extends AppCompatActivity {
             }
         });
 
+    }
 
+
+    private void countDown() {
+        CountDownTimer countDownTimer;
+        final int[] i = {0};
+
+        pbClose.setProgress(i[0]);
+        countDownTimer = new CountDownTimer(6000, 1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                Log.v("Log_tag", "Tick of Progress" + i[0] + millisUntilFinished);
+                i[0]++;
+                pbClose.setProgress(i[0] * 100 / (5000 / 1000));
+                if (pbClose.getProgress() == 100)
+                    pbClose.setVisibility(View.GONE);
+
+            }
+
+            @Override
+            public void onFinish() {
+                //Do what you want
+                i[0]++;
+                pbClose.setProgress(100);
+            }
+        };
+        countDownTimer.start();
     }
 
     private void startProgress(final int duration) {

@@ -11,6 +11,7 @@
         android:id="@+id/ivAdsContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
     <RelativeLayout
         android:id="@+id/rlVideoContainer"
         android:layout_width="match_parent"
@@ -20,7 +21,7 @@
             android:id="@+id/vv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true" />
 
         <ProgressBar
             android:id="@+id/pb"
@@ -28,14 +29,35 @@
             android:layout_width="match_parent"
             android:layout_height="10dp"
             android:layout_alignParentBottom="true"
-            android:progress="100"/>
+            android:progress="100" />
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/ivClose"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_margin="8dp"
-        android:src="@drawable/ic_close"
-        android:tint="@android:color/darker_gray"/>
+
+    <FrameLayout
+        android:layout_width="52dp"
+        android:layout_height="52dp">
+
+        <ImageView
+            android:id="@+id/ivClose"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_close"
+            android:layout_gravity="center"
+            android:tint="@android:color/darker_gray" />
+
+        <com.emredavarci.circleprogressbar.CircleProgressBar
+            xmlns:cpb="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/pbClose"
+            style="@style/Base.Widget.AppCompat.ProgressBar"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:visibility="visible"
+            android:progress="10"
+            cpb:progressColor="@android:color/holo_blue_light"
+            cpb:backgroundColor="@color/gray"
+            cpb:strokeWidth="2"
+            cpb:backgroundWidth="2"
+            cpb:maxValue="100"
+            android:layout_gravity="center"/>
+    </FrameLayout>
 </RelativeLayout>
