@@ -9,8 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -71,7 +71,8 @@ public class KaktusAdsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         lockDeviceRotation(false);
-        vv.pause();
+        if(vv!= null)
+            vv.pause();
         finish();
         super.onPause();
     }

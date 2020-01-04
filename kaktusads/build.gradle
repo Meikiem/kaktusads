@@ -11,17 +11,17 @@ project.ext {
     universalImageLoader = '1.9.5'
 }
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
 
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     }
 
@@ -42,12 +42,12 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "com.android.support:appcompat-v7:$supportVersion"
+    implementation "androidx.appcompat:appcompat:1.0.0"
     implementation "com.squareup.retrofit2:retrofit:$project.retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$project.retrofitVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$project.httpInterceptorVersion"
     implementation "com.squareup.okhttp3:okhttp:$project.okHttpVersion"
-    implementation "com.android.support:support-annotations:$supportVersion"
+    implementation "androidx.annotation:annotation:1.0.0"
     dependencies {
         implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.16'
     }
