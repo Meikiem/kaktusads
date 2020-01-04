@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/black"
     tools:context=".activity.KaktusAdsActivity">
 
@@ -44,7 +45,7 @@
             android:src="@drawable/ic_close"
             android:tint="@android:color/darker_gray" />
 
-        <com.emredavarci.circleprogressbar.CircleProgressBar
+<!--        <com.emredavarci.circleprogressbar.CircleProgressBar
             xmlns:cpb="http://schemas.android.com/apk/res-auto"
             android:id="@+id/pbClose"
             style="@style/Base.Widget.AppCompat.ProgressBar"
@@ -52,11 +53,22 @@
             android:layout_height="46dp"
             android:layout_gravity="center"
             android:progress="10"
-            android:visibility="visible"
+            android:visibility="gone"
             cpb:backgroundColor="@color/gray"
             cpb:backgroundWidth="2"
             cpb:maxValue="100"
             cpb:progressColor="@android:color/holo_blue_light"
-            cpb:strokeWidth="2" />
+            cpb:strokeWidth="2" />-->
+        <com.mikhaellopez.circularprogressbar.CircularProgressBar
+            android:id="@+id/circularProgressBar"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            app:cpb_background_progressbar_color="@color/gray"
+            app:cpb_background_progressbar_width="2dp"
+            app:cpb_progress_direction="to_right"
+            android:layout_gravity="center"
+            app:cpb_progressbar_color="@android:color/holo_blue_light"
+            app:cpb_progressbar_width="10dp"
+            app:cpb_round_border="false" />
     </FrameLayout>
 </RelativeLayout>

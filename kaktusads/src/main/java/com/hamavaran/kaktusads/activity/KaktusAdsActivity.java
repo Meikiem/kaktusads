@@ -9,8 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,15 +16,18 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.VideoView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.emredavarci.circleprogressbar.CircleProgressBar;
 import com.hamavaran.kaktusads.R;
 import com.hamavaran.kaktusads.interfaces.FullPageAdsListener;
 import com.hamavaran.kaktusads.util.SharedMethode;
+import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 
 import pl.droidsonroids.gif.GifImageView;
 
@@ -44,8 +45,9 @@ public class KaktusAdsActivity extends AppCompatActivity {
     private VideoView vv;
     private ProgressBar pb;
     private boolean isVideoAd = false;
-    private CircleProgressBar pbClose;
+//    private CircleProgressBar pbClose;
     final int[] duration = {0};
+    private CircularProgressBar circularProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +89,12 @@ public class KaktusAdsActivity extends AppCompatActivity {
         findViewById(R.id.ivClose).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(pbClose.getVisibility() == View.GONE) {
+//                if(pbClose.getVisibility() == View.GONE) {
+//                    if (fullPageAdsListener != null)
+//                        fullPageAdsListener.onCloseButtonClick();
+//                    finish();
+//                }
+                if(circularProgressBar.getVisibility() == View.GONE) {
                     if (fullPageAdsListener != null)
                         fullPageAdsListener.onCloseButtonClick();
                     finish();
@@ -108,7 +115,9 @@ public class KaktusAdsActivity extends AppCompatActivity {
 
     private void initVideoAd() {
         pb = findViewById(R.id.pb);
-        pbClose = findViewById(R.id.pbClose);
+//        pbClose = findViewById(R.id.pbClose);
+        circularProgressBar = findViewById(R.id.circularProgressBar);
+        circularProgressBar.setProgressMax(100);
         pb.setProgress(0);
         pb.setMax(100);
 
@@ -123,10 +132,12 @@ public class KaktusAdsActivity extends AppCompatActivity {
                 startProgress(duration[0]);
 
                 if (duration[0] >= 0) {
-                    pbClose.setVisibility(View.VISIBLE);
+//                    pbClose.setVisibility(View.VISIBLE);
+                    circularProgressBar.setVisibility(View.VISIBLE);
                     countDown();
                 } else {
-                    pbClose.setVisibility(View.GONE);
+//                    pbClose.setVisibility(View.GONE);
+                    circularProgressBar.setVisibility(View.GONE);
                 }
             }
         });
@@ -146,16 +157,20 @@ public class KaktusAdsActivity extends AppCompatActivity {
         CountDownTimer countDownTimer;
         final int[] i = {0};
 
-        pbClose.setProgress(i[0]);
+//        pbClose.setProgress(i[0]);
+        circularProgressBar.setProgress(i[0]);
         countDownTimer = new CountDownTimer(6000, 1000) {
 
             @Override
             public void onTick(long millisUntilFinished) {
                 Log.v("Log_tag", "Tick of Progress" + i[0] + millisUntilFinished);
                 i[0]++;
-                pbClose.setProgress(i[0] * 100 / (5000 / 1000));
-                if (pbClose.getProgress() == 100)
-                    pbClose.setVisibility(View.GONE);
+//                pbClose.setProgress(i[0] * 100 / (5000 / 1000));
+                circularProgressBar.setProgress(i[0] * 100 / (5000 / 1000));
+                if (circularProgressBar.getProgress() == 100) {
+//                    pbClose.setVisibility(View.GONE);
+                    circularProgressBar.setVisibility(View.GONE);
+                }
 
             }
 
@@ -163,7 +178,8 @@ public class KaktusAdsActivity extends AppCompatActivity {
             public void onFinish() {
                 //Do what you want
                 i[0]++;
-                pbClose.setProgress(100);
+//                pbClose.setProgress(100);
+                circularProgressBar.setProgress(100);
             }
         };
         countDownTimer.start();
