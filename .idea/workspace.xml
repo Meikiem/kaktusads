@@ -11,7 +11,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="645ac262-cee4-4b3e-a4cf-a10d601739cb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/kaktusads/src/main/res/layout/activity_kaktus_ads.xml" beforeDir="false" afterPath="$PROJECT_DIR$/kaktusads/src/main/res/layout/activity_kaktus_ads.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kaktusads/src/main/java/com/hamavaran/kaktusads/activity/KaktusAdsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/kaktusads/src/main/java/com/hamavaran/kaktusads/activity/KaktusAdsActivity.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -46,11 +46,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/kaktusads/src/main/res/layout/activity_kaktus_ads.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="19" column="8" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="8" />
+            <state relative-caret-position="293">
+              <caret line="55" column="37" selection-start-line="55" selection-start-column="37" selection-end-line="55" selection-end-column="37" />
             </state>
           </provider>
           <provider editor-type-id="android-designer2" />
@@ -77,11 +77,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/kaktusads/src/main/java/com/hamavaran/kaktusads/activity/KaktusAdsActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="436">
-              <caret line="54" column="45" selection-start-line="54" selection-start-column="45" selection-end-line="54" selection-end-column="45" />
+            <state relative-caret-position="-106">
+              <caret line="216" column="28" selection-start-line="216" selection-start-column="28" selection-end-line="216" selection-end-column="28" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -150,6 +150,8 @@
       <find>CircleProgressBar</find>
       <find>pbClose</find>
       <find>corners</find>
+      <find>getVisibility()</find>
+      <find>com.mikhaellopez.circularprogressbar.CircularProgressBar</find>
     </findStrings>
   </component>
   <component name="GenerateSignedApkSettings">
@@ -170,8 +172,8 @@
         <option value="$PROJECT_DIR$/app/src/main/res/values/colors.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/hamavaran/advertisement/MainActivity.java" />
         <option value="$PROJECT_DIR$/kaktusads/build.gradle" />
-        <option value="$PROJECT_DIR$/kaktusads/src/main/java/com/hamavaran/kaktusads/activity/KaktusAdsActivity.java" />
         <option value="$PROJECT_DIR$/kaktusads/src/main/res/layout/activity_kaktus_ads.xml" />
+        <option value="$PROJECT_DIR$/kaktusads/src/main/java/com/hamavaran/kaktusads/activity/KaktusAdsActivity.java" />
       </list>
     </option>
   </component>
@@ -448,9 +450,10 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="819" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.21816881" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.21816881" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" side_tool="true" />
@@ -474,7 +477,7 @@
       <window_info anchor="right" id="Theme Preview" order="3" />
       <window_info anchor="right" id="Palette&#9;" order="4" />
       <window_info anchor="right" id="Fabric" order="5" weight="0.3297568" />
-      <window_info active="true" anchor="right" id="Preview" order="6" visible="true" weight="0.3297568" />
+      <window_info anchor="right" id="Preview" order="6" weight="0.3297568" />
     </layout>
   </component>
   <component name="XDebuggerManager">
@@ -717,23 +720,23 @@
       <provider selected="true" editor-type-id="text-editor" />
       <provider editor-type-id="android-designer2" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/kaktusads/src/main/res/layout/activity_kaktus_ads.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="293">
+          <caret line="55" column="37" selection-start-line="55" selection-start-column="37" selection-end-line="55" selection-end-column="37" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer2" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/kaktusads/src/main/java/com/hamavaran/kaktusads/activity/KaktusAdsActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="436">
-          <caret line="54" column="45" selection-start-line="54" selection-start-column="45" selection-end-line="54" selection-end-column="45" />
+        <state relative-caret-position="-106">
+          <caret line="216" column="28" selection-start-line="216" selection-start-column="28" selection-end-line="216" selection-end-column="28" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kaktusads/src/main/res/layout/activity_kaktus_ads.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="19" column="8" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="8" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer2" />
     </entry>
   </component>
   <component name="masterDetails">

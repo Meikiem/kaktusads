@@ -213,6 +213,9 @@ public class KaktusAdsActivity extends AppCompatActivity {
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                 if (fullPageAdsListener != null)
                     fullPageAdsListener.onImageLoaded(ADS_TOKEN);
+                startProgress(3000);
+                countDown();
+
                 return false;
             }
         }).into(myImage);
