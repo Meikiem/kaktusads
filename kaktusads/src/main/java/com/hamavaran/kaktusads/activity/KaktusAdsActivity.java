@@ -86,6 +86,7 @@ public class KaktusAdsActivity extends AppCompatActivity {
 
     private void initUI() {
         rlVideoContainer = findViewById(R.id.rlVideoContainer);
+        circularProgressBar = findViewById(R.id.circularProgressBar);
         findViewById(R.id.ivClose).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +117,6 @@ public class KaktusAdsActivity extends AppCompatActivity {
     private void initVideoAd() {
         pb = findViewById(R.id.pb);
 //        pbClose = findViewById(R.id.pbClose);
-        circularProgressBar = findViewById(R.id.circularProgressBar);
         circularProgressBar.setProgressMax(100);
         pb.setProgress(0);
         pb.setMax(100);
