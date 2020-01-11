@@ -16,20 +16,11 @@
         android:id="@+id/rlVideoContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <VideoView
             android:id="@+id/vv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true" />
-
-        <ProgressBar
-            android:id="@+id/pb"
-            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:layout_alignParentBottom="true"
-            android:progress="100" />
     </RelativeLayout>
 
 
