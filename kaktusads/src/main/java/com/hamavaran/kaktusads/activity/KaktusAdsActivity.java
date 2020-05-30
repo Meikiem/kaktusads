@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.VideoView;
 
@@ -43,9 +42,7 @@ public class KaktusAdsActivity extends AppCompatActivity {
     private FullPageAdsListener fullPageAdsListener;
     private RelativeLayout rlVideoContainer;
     private VideoView vv;
-    private ProgressBar pb;
     private boolean isVideoAd = false;
-//    private CircleProgressBar pbClose;
     final int[] duration = {0};
     private CircularProgressBar circularProgressBar;
 
@@ -86,14 +83,10 @@ public class KaktusAdsActivity extends AppCompatActivity {
 
     private void initUI() {
         rlVideoContainer = findViewById(R.id.rlVideoContainer);
+        circularProgressBar = findViewById(R.id.circularProgressBar);
         findViewById(R.id.ivClose).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if(pbClose.getVisibility() == View.GONE) {
-//                    if (fullPageAdsListener != null)
-//                        fullPageAdsListener.onCloseButtonClick();
-//                    finish();
-//                }
                 if(circularProgressBar.getVisibility() == View.GONE) {
                     if (fullPageAdsListener != null)
                         fullPageAdsListener.onCloseButtonClick();
@@ -114,13 +107,6 @@ public class KaktusAdsActivity extends AppCompatActivity {
     }
 
     private void initVideoAd() {
-        pb = findViewById(R.id.pb);
-//        pbClose = findViewById(R.id.pbClose);
-        circularProgressBar = findViewById(R.id.circularProgressBar);
-        circularProgressBar.setProgressMax(100);
-        pb.setProgress(0);
-        pb.setMax(100);
-
         vv = findViewById(R.id.vv);
         vv.setVideoURI(Uri.parse(loadedAdsUrl.startsWith("http") ? loadedAdsUrl : "http:" + loadedAdsUrl));
 
@@ -129,14 +115,10 @@ public class KaktusAdsActivity extends AppCompatActivity {
 
             public void onPrepared(MediaPlayer mp) {
                 duration[0] = vv.getDuration();
-                startProgress(duration[0]);
-
                 if (duration[0] >= 0) {
-//                    pbClose.setVisibility(View.VISIBLE);
                     circularProgressBar.setVisibility(View.VISIBLE);
                     countDown();
                 } else {
-//                    pbClose.setVisibility(View.GONE);
                     circularProgressBar.setVisibility(View.GONE);
                 }
             }
@@ -156,19 +138,15 @@ public class KaktusAdsActivity extends AppCompatActivity {
     private void countDown() {
         CountDownTimer countDownTimer;
         final int[] i = {0};
-
-//        pbClose.setProgress(i[0]);
         circularProgressBar.setProgress(i[0]);
-        countDownTimer = new CountDownTimer(6000, 1000) {
+        countDownTimer = new CountDownTimer(11000, 1000) {
 
             @Override
             public void onTick(long millisUntilFinished) {
                 Log.v("Log_tag", "Tick of Progress" + i[0] + millisUntilFinished);
                 i[0]++;
-//                pbClose.setProgress(i[0] * 100 / (5000 / 1000));
-                circularProgressBar.setProgress(i[0] * 100 / (5000 / 1000));
+                circularProgressBar.setProgress(i[0] * 100 / (11000 / 1000));
                 if (circularProgressBar.getProgress() == 100) {
-//                    pbClose.setVisibility(View.GONE);
                     circularProgressBar.setVisibility(View.GONE);
                 }
 
@@ -178,7 +156,6 @@ public class KaktusAdsActivity extends AppCompatActivity {
             public void onFinish() {
                 //Do what you want
                 i[0]++;
-//                pbClose.setProgress(100);
                 circularProgressBar.setProgress(100);
             }
         };
@@ -186,13 +163,13 @@ public class KaktusAdsActivity extends AppCompatActivity {
     }
 
     private void startProgress(final int duration) {
-        if (pb.getProgress() < 100 && duration > 0) {
+        if (circularProgressBar.getProgress() < 100 && duration > 0) {
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    pb.setProgress((vv.getCurrentPosition() * 100) / duration);
-                    if (pb.getProgress() == 100)
+                    circularProgressBar.setProgress((vv.getCurrentPosition() * 100) / duration);
+                    if (circularProgressBar.getProgress() == 100)
                         finish();
                     handler.postDelayed(this, 500);
                 }
@@ -213,6 +190,7 @@ public class KaktusAdsActivity extends AppCompatActivity {
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                 if (fullPageAdsListener != null)
                     fullPageAdsListener.onImageLoaded(ADS_TOKEN);
+                countDown();
                 return false;
             }
         }).into(myImage);
