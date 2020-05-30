@@ -1,8 +1,10 @@
-package com.hamavaran.advertisement;
+package com.hamavaran.advenglish;
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.hamavaran.advertisement.R;
 import com.hamavaran.kaktusads.activity.Advertisement;
 import com.hamavaran.kaktusads.activity.Configuration;
 import com.hamavaran.kaktusads.interfaces.AdClickListener;

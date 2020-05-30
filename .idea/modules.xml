@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/git_kaktus_ads.iml" filepath="$PROJECT_DIR$/git_kaktus_ads.iml" />
-      <module fileurl="file://$PROJECT_DIR$/kaktusads/kaktusads.iml" filepath="$PROJECT_DIR$/kaktusads/kaktusads.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="git_kaktus_ads_eng/app" />
+      <module fileurl="file://$PROJECT_DIR$/git_kaktus_ads_eng.iml" filepath="$PROJECT_DIR$/git_kaktus_ads_eng.iml" group="git_kaktus_ads_eng" />
+      <module fileurl="file://$PROJECT_DIR$/kaktusads/kaktusads.iml" filepath="$PROJECT_DIR$/kaktusads/kaktusads.iml" group="git_kaktus_ads_eng/kaktusads" />
     </modules>
   </component>
 </project>
